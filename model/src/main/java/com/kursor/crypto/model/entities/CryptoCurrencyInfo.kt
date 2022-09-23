@@ -1,6 +1,9 @@
 package com.kursor.crypto.model.entities
 
-data class CryptoCurrency(
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class CryptoCurrencyInfo(
     val id: String,
     val symbol: String,
     val name: String,

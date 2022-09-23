@@ -1,7 +1,6 @@
 plugins {
     id("java-library")
     id("org.jetbrains.kotlin.jvm")
-    kotlin("plugin.serialization") version "1.7.10"
 }
 
 java {
@@ -10,5 +9,5 @@ java {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
+    implementation(project(":model"))
 }
