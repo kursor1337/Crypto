@@ -1,4 +1,14 @@
 package com.kursor.crypto.domain.useCases
 
-class LoadCryptoCurrencyInfoList {
+import com.kursor.crypto.domain.repositories.CryptoCurrencyInfoRepository
+import com.kursor.crypto.domain.tryRequest
+
+class LoadCryptoCurrencyInfoList(
+    private val cryptoCurrencyInfoRepository: CryptoCurrencyInfoRepository
+) {
+
+    suspend operator fun invoke(vsCurrency: String) = tryRequest {
+        cryptoCurrencyInfoRepository.getCryptoCurrencyInfoList(vsCurrency)
+    }
+
 }

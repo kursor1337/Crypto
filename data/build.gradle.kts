@@ -38,6 +38,7 @@ android {
 dependencies {
 
     implementation(project(":domain"))
+    implementation(project(":model"))
 
     implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
 

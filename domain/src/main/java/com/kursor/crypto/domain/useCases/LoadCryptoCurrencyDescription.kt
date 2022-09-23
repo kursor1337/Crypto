@@ -1,4 +1,15 @@
 package com.kursor.crypto.domain.useCases
 
-class LoadCryptoCurrencyDescription {
+import com.kursor.crypto.domain.repositories.CryptoCurrencyDescriptionRepository
+import com.kursor.crypto.domain.tryRequest
+import com.kursor.crypto.model.entities.CryptoCurrencyDescription
+
+class LoadCryptoCurrencyDescription(
+    private val cryptoCurrencyDescriptionRepository: CryptoCurrencyDescriptionRepository
+) {
+
+    suspend operator fun invoke(id: String): Result<CryptoCurrencyDescription> = tryRequest {
+        cryptoCurrencyDescriptionRepository.getCryptoCurrencyDescription(id)
+    }
+
 }
