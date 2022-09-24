@@ -19,7 +19,9 @@ val dataModule = module {
         Retrofit.Builder()
             .baseUrl("https://api.coingecko.com/api/v3/")
             .addConverterFactory(
-                Json.asConverterFactory(MediaType.get("application/json"))
+                Json {
+                    ignoreUnknownKeys = true
+                }.asConverterFactory(MediaType.get("application/json"))
             ).build()
     }
 

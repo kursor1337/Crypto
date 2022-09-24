@@ -9,7 +9,7 @@ import retrofit2.http.Query
 
 interface CryptoCurrencyDescriptionService {
 
-    @GET("/coins/{id}")
+    @GET("coins/{id}")
     fun getCryptoCurrencyDescription(
         @Path("id") id: String,
         @Query("localization") localization: Boolean = false

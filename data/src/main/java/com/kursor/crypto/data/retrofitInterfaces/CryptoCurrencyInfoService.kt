@@ -9,7 +9,7 @@ import retrofit2.http.Query
 
 interface CryptoCurrencyInfoService {
 
-    @GET("/coins/markets")
+    @GET("coins/markets")
     fun getCryptoCurrencyInfoList(
         @Query("vs_currency") vsCurrency: String
     ): Call<List<CryptoCurrencyInfo>>
