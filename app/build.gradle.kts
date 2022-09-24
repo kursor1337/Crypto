@@ -57,6 +57,8 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
 
+    implementation("com.github.GrenderG:Toasty:1.5.2")
+
     implementation("com.google.accompanist:accompanist-swiperefresh:0.25.1")
 
     implementation("com.squareup.retrofit2:retrofit:$retrofit_version")

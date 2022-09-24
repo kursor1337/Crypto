@@ -1,7 +1,9 @@
 package com.kursor.crypto.ui.screens.cryptoList
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -29,13 +32,16 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.kursor.crypto.ConnectionStatus
 import com.kursor.crypto.R
 import com.kursor.crypto.model.entities.CryptoCurrencyInfo
+import com.kursor.crypto.ui.Screens
 import com.kursor.crypto.ui.screens.LoadingScreen
 import com.kursor.crypto.ui.screens.SomethingWentWrongScreen
 import com.kursor.crypto.ui.screens.cryptoList.CryptoCurrencyInfoListViewModel.Currency
+import com.kursor.crypto.ui.screens.cryptoList.CryptoCurrencyInfoListViewModel.RefreshingState
 import com.kursor.crypto.ui.screens.elements.ChipGroup
 import org.koin.androidx.compose.getViewModel
 import java.text.DecimalFormat
 import kotlin.math.sign
+import es.dmoral.toasty.Toasty
 
 @Composable
 fun CryptoCurrencyInfoListScreen(
@@ -48,7 +54,9 @@ fun CryptoCurrencyInfoListScreen(
     val connectionStatus =
         viewModel.connectionStatusLiveData.observeAsState(initial = ConnectionStatus.LOADING)
     val selectedCurrency = viewModel.selectedCurrencyLiveData.observeAsState(initial = Currency.USD)
-    val isRefreshing = viewModel.isRefreshingLiveData.observeAsState(false)
+    val refreshingState = viewModel.refreshingLiveData.observeAsState(false)
+
+    val context = LocalContext.current
 
     viewModel.loadData(Currency.USD)
 
@@ -91,15 +99,32 @@ fun CryptoCurrencyInfoListScreen(
             )
             ConnectionStatus.SUCCESS -> {
                 SwipeRefresh(
-                    state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
+                    state = rememberSwipeRefreshState(
+                        isRefreshing = refreshingState.value == RefreshingState.REFRESHING
+                    ),
                     onRefresh = { viewModel.refresh() }) {
+                    if (refreshingState.value == RefreshingState.FAILURE)
+                        Toasty.error(
+                            context,
+                            R.string.error_while_loading,
+                            Toast.LENGTH_SHORT,
+                            true
+                        ).show()
                     LazyColumn {
                         items(cryptoCurrencyInfoList.value) {
                             CryptoCurrencyInfoListItem(
                                 cryptoCurrencyInfo = it,
                                 selectedCurrency = selectedCurrency.value,
                                 modifier = Modifier.padding(12.dp)
-                            )
+                            ) {
+                                navController.navigate(
+                                    Screens.CryptoCurrencyDescriptionScreen.withArgs(
+                                        cryptoId = it.id,
+                                        cryptoName = it.name,
+                                        cryptoImageLink = it.image
+                                    )
+                                )
+                            }
                             Divider(modifier = Modifier.height(2.dp))
                         }
                     }
@@ -119,15 +144,18 @@ fun CryptoCurrencyInfoListScreen(
 fun CryptoCurrencyInfoListItem(
     cryptoCurrencyInfo: CryptoCurrencyInfo,
     selectedCurrency: Currency,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = { }
 ) {
 
     val decimalFormat by remember { mutableStateOf(DecimalFormat("###,###.##")) }
     val fontFamily by remember { mutableStateOf(FontFamily.SansSerif) }
 
     Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier.clickable {
+            onClick()
+        },
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
             painter = rememberAsyncImagePainter(cryptoCurrencyInfo.image),

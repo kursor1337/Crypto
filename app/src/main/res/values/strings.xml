@@ -4,4 +4,7 @@
     <string name="try_again_question">Попробуем снова?</string>
     <string name="try_again">Попробовать снова</string>
     <string name="crypto_currency_list">Список криптовалют</string>
+    <string name="crypto_currency_description">Описание</string>
+    <string name="crypto_currency_categories">Категории</string>
+    <string name="error_while_loading">Произошла ошибка при загрузке</string>
 </resources>
