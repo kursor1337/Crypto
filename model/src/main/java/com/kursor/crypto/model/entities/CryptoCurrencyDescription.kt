@@ -6,6 +6,11 @@ import kotlinx.serialization.Serializable
 data class CryptoCurrencyDescription(
     val id: String,
     val symbol: String,
-    val description: String,
+    val description: Description,
     val categories: List<String>
+)
+
+@Serializable
+data class Description(
+    val en: String
 )

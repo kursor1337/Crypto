@@ -65,7 +65,6 @@ fun CryptoCurrencyDescriptionScreen(
             }
         }
     ) {
-
         when (connectionStatus.value) {
             ConnectionStatus.LOADING -> LoadingScreen(
                 modifier = Modifier.fillMaxSize()
@@ -81,7 +80,7 @@ fun CryptoCurrencyDescriptionScreen(
 
                     TextBlock(
                         title = stringResource(id = R.string.crypto_currency_description),
-                        text = cryptoCurrencyDescription.value?.description ?: "",
+                        text = cryptoCurrencyDescription.value?.description?.en ?: "",
                         modifier = Modifier.padding(12.dp)
                     )
 
