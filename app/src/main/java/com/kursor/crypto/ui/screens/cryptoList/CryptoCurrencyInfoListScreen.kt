@@ -3,6 +3,7 @@ package com.kursor.crypto.ui.screens.cryptoList
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,8 +18,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.kursor.crypto.ConnectionStatus
 import com.kursor.crypto.R
 import com.kursor.crypto.model.entities.CryptoCurrencyInfo
+import com.kursor.crypto.ui.screens.LoadingScreen
+import com.kursor.crypto.ui.screens.SomethingWentWrongSceeen
+import com.kursor.crypto.ui.screens.cryptoList.CryptoCurrencyInfoListViewModel.Currency
 import com.kursor.crypto.ui.screens.elements.ChipGroup
 import org.koin.androidx.compose.getViewModel
 
@@ -31,6 +36,11 @@ fun CryptoCurrencyInfoListScreen(
     val cryptoCurrencyInfoList =
         viewModel.cryptoCurrencyInfoListLiveData.observeAsState(initial = emptyList())
 
+    val connectionStatus =
+        viewModel.connectionStatusLiveData.observeAsState(initial = ConnectionStatus.LOADING)
+
+    viewModel.loadData(Currency.USD)
+
     Scaffold(
         topBar = {
             TopAppBar() {
@@ -40,22 +50,35 @@ fun CryptoCurrencyInfoListScreen(
                         modifier = Modifier.padding(8.dp)
                     )
                     ChipGroup(
-                        elements = CryptoCurrencyInfoListViewModel.Currency.values().toList(),
+                        elements = Currency.values().toList(),
                         onSelectedChanged = {
                             viewModel.loadData(it)
                         },
-                        selected = CryptoCurrencyInfoListViewModel.Currency.USD
+                        selected = Currency.USD
                     )
                 }
 
             }
         }
     ) {
-        LazyColumn {
-            items(cryptoCurrencyInfoList.value) {
-                CryptoCurrencyInfoListItem(cryptoCurrencyInfo = it)
+        when (connectionStatus.value) {
+            ConnectionStatus.LOADING -> LoadingScreen(
+                modifier = Modifier.fillMaxSize()
+            )
+            ConnectionStatus.SUCCESS -> {
+                LazyColumn {
+                    items(cryptoCurrencyInfoList.value) {
+                        CryptoCurrencyInfoListItem(cryptoCurrencyInfo = it)
+                    }
+                }
+            }
+            ConnectionStatus.FAILURE -> SomethingWentWrongSceeen(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                viewModel.loadData(Currency.USD)
             }
         }
+
     }
 }
 

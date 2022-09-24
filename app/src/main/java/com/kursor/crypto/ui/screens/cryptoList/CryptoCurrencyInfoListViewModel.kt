@@ -22,6 +22,7 @@ class CryptoCurrencyInfoListViewModel(
 
 
     fun loadData(currency: Currency) {
+        _connectionStatusLiveData.value = ConnectionStatus.LOADING
         viewModelScope.launch {
             loadCryptoCurrencyInfoListUseCase(currency.id)
                 .onSuccess {

@@ -21,6 +21,7 @@ class CryptoCurrencyDescriptionViewModel(
     val connectionStatusLiveData: LiveData<ConnectionStatus> get() = _connectionStatusLiveData
 
     fun loadData(id: String) {
+        _connectionStatusLiveData.value = ConnectionStatus.LOADING
         viewModelScope.launch {
             loadCryptoCurrencyDescriptionUseCase(id)
                 .onSuccess {
