@@ -4,7 +4,7 @@ import com.kursor.crypto.domain.repositories.CryptoCurrencyDescriptionRepository
 import com.kursor.crypto.domain.tryRequest
 import com.kursor.crypto.model.entities.CryptoCurrencyDescription
 
-class LoadCryptoCurrencyDescription(
+class LoadCryptoCurrencyDescriptionUseCase(
     private val cryptoCurrencyDescriptionRepository: CryptoCurrencyDescriptionRepository
 ) {
 

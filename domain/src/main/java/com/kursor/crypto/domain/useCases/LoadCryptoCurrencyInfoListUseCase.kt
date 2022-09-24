@@ -3,7 +3,7 @@ package com.kursor.crypto.domain.useCases
 import com.kursor.crypto.domain.repositories.CryptoCurrencyInfoRepository
 import com.kursor.crypto.domain.tryRequest
 
-class LoadCryptoCurrencyInfoList(
+class LoadCryptoCurrencyInfoListUseCase(
     private val cryptoCurrencyInfoRepository: CryptoCurrencyInfoRepository
 ) {
 

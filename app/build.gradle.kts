@@ -1,4 +1,5 @@
 val compose_ui_version: String by project
+val koin_version: String by project
 
 plugins {
     id("com.android.application")
@@ -49,6 +50,24 @@ android {
 }
 
 dependencies {
+
+    implementation(project(":model"))
+    implementation(project(":domain"))
+    implementation(project(":data"))
+
+    //Koin di
+    // Koin Core features
+    implementation("io.insert-koin:koin-core:$koin_version")
+    // Koin main features for Android
+    implementation("io.insert-koin:koin-android:$koin_version")
+    // Navigation Graph
+    implementation("io.insert-koin:koin-androidx-navigation:$koin_version")
+    // Jetpack Compose
+    implementation("io.insert-koin:koin-androidx-compose:$koin_version")
+
+    val nav_version = "2.5.1"
+
+    implementation("androidx.navigation:navigation-compose:$nav_version")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
