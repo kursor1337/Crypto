@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -125,7 +126,6 @@ fun CryptoCurrencyInfoListScreen(
                                     )
                                 )
                             }
-                            Divider(modifier = Modifier.height(2.dp))
                         }
                     }
                 }
@@ -149,85 +149,100 @@ fun CryptoCurrencyInfoListItem(
 ) {
 
     val decimalFormat by remember { mutableStateOf(DecimalFormat("###,###.##")) }
-    val fontFamily by remember { mutableStateOf(FontFamily.SansSerif) }
-
-    Row(
-        modifier = modifier.clickable {
-            onClick()
-        },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Image(
-            painter = rememberAsyncImagePainter(cryptoCurrencyInfo.image),
-            contentDescription = "crypto image",
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .border(
-                    width = 1.5.dp,
-                    color = MaterialTheme.colors.primary,
-                    shape = CircleShape
-                )
+    val fontFamily by remember {
+        mutableStateOf(
+            FontFamily(
+                Font(R.font.lato_regular),
+                Font(R.font.lato_black),
+                Font(R.font.lato_black_italic),
+                Font(R.font.lato_bold),
+                Font(R.font.lato_bold_italic),
+                Font(R.font.lato_light),
+                Font(R.font.lato_light_italic),
+                Font(R.font.lato_italic),
+                Font(R.font.lato_thin),
+                Font(R.font.lato_thin_italic)
+            )
         )
-        Column {
-            Row {
-                Text(
-                    text = cryptoCurrencyInfo.name,
-                    modifier = Modifier.padding(
-                        horizontal = 12.dp
-                    ),
-                    style = TextStyle(
-                        fontSize = 20.sp
-                    ),
-                    fontFamily = fontFamily
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = "${selectedCurrency.symbol}${
-                        decimalFormat.format(
-                            cryptoCurrencyInfo.currentPrice
-                        )
-                    }",
-                    modifier = Modifier.padding(
-                        horizontal = 12.dp
-                    ),
-                    style = TextStyle(
-                        fontSize = 20.sp
-                    ),
-                    fontFamily = fontFamily
-                )
+    }
 
-            }
-            Row {
-                Text(
-                    text = cryptoCurrencyInfo.symbol.uppercase(),
-                    modifier = Modifier.padding(
-                        horizontal = 12.dp
-                    ),
-                    color = Color.Gray,
-                    fontFamily = fontFamily
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                val sign = sign(cryptoCurrencyInfo.priceChange24h)
-                Text(
-                    text = "${
-                        when (sign) {
-                            1.0 -> "+"
-                            else -> ""
-                        }
-                    }${
-                        decimalFormat.format(
-                            cryptoCurrencyInfo.priceChange24h
-                        )
-                    }%",
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    color = when (sign) {
-                        -1.0 -> Color.Red
-                        1.0 -> Color.Green
-                        else -> Color.Gray
-                    },
-                    fontFamily = fontFamily
-                )
+    Surface(modifier = Modifier.clickable { onClick() }) {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(cryptoCurrencyInfo.image),
+                contentDescription = "crypto image",
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .border(
+                        width = 1.5.dp,
+                        color = MaterialTheme.colors.primary,
+                        shape = CircleShape
+                    )
+            )
+            Column {
+                Row {
+                    Text(
+                        text = cryptoCurrencyInfo.name,
+                        modifier = Modifier.padding(
+                            horizontal = 12.dp
+                        ),
+                        style = TextStyle(
+                            fontSize = 20.sp
+                        ),
+                        fontFamily = fontFamily
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "${selectedCurrency.symbol}${
+                            decimalFormat.format(
+                                cryptoCurrencyInfo.currentPrice
+                            )
+                        }",
+                        modifier = Modifier.padding(
+                            horizontal = 12.dp
+                        ),
+                        style = TextStyle(
+                            fontSize = 20.sp
+                        ),
+                        fontFamily = fontFamily
+                    )
+
+                }
+                Row {
+                    Text(
+                        text = cryptoCurrencyInfo.symbol.uppercase(),
+                        modifier = Modifier.padding(
+                            horizontal = 12.dp
+                        ),
+                        color = Color.Gray,
+                        fontFamily = fontFamily
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    val sign = sign(cryptoCurrencyInfo.priceChange24h)
+                    Text(
+                        text = "${
+                            when (sign) {
+                                1.0 -> "+"
+                                else -> ""
+                            }
+                        }${
+                            decimalFormat.format(
+                                cryptoCurrencyInfo.priceChange24h
+                            )
+                        }%",
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        color = when (sign) {
+                            -1.0 -> Color.Red
+                            1.0 -> Color.Green
+                            else -> Color.Gray
+                        },
+                        fontFamily = fontFamily
+                    )
+                }
             }
         }
     }

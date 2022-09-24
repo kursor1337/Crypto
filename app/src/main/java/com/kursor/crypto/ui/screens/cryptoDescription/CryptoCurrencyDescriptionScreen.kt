@@ -1,10 +1,8 @@
 package com.kursor.crypto.ui.screens.cryptoDescription
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -12,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,23 +43,31 @@ fun CryptoCurrencyDescriptionScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar {
-                IconButton(
-                    modifier = Modifier.padding(12.dp),
-                    onClick = { navController.popBackStack() }
-                ) {
-                    Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "back")
+            Column(
+                verticalArrangement = Arrangement.Center
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        modifier = Modifier.padding(6.dp),
+                        onClick = { navController.popBackStack() }
+                    ) {
+                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "back")
+                    }
+                    Text(
+                        text = cryptoName,
+                        modifier = Modifier.padding(
+                            vertical = 12.dp,
+                            horizontal = 12.dp
+                        ),
+                        style = TextStyle(
+                            fontSize = 22.sp
+                        ),
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
                 }
-                Text(
-                    text = cryptoName,
-                    modifier = Modifier.padding(
-                        vertical = 16.dp,
-                        horizontal = 16.dp
-                    ),
-                    style = TextStyle(
-                        fontSize = 22.sp
-                    ),
-                    fontWeight = FontWeight.Bold
+                Divider(
+                    modifier = Modifier.height(3.dp)
                 )
             }
         }
@@ -70,25 +77,31 @@ fun CryptoCurrencyDescriptionScreen(
                 modifier = Modifier.fillMaxSize()
             )
             ConnectionStatus.SUCCESS -> {
-                Column(
+                LazyColumn(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(cryptoImageLink),
-                        contentDescription = "crypto icon"
-                    )
+                    item {
+                        Image(
+                            painter = rememberAsyncImagePainter(cryptoImageLink),
+                            contentDescription = "crypto icon",
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .size(120.dp)
+                        )
 
-                    TextBlock(
-                        title = stringResource(id = R.string.crypto_currency_description),
-                        text = cryptoCurrencyDescription.value?.description?.en ?: "",
-                        modifier = Modifier.padding(12.dp)
-                    )
+                        TextBlock(
+                            title = stringResource(id = R.string.crypto_currency_description),
+                            text = cryptoCurrencyDescription.value?.description?.en ?: "",
+                            modifier = Modifier.padding(6.dp)
+                        )
 
-                    TextBlock(
-                        title = stringResource(id = R.string.crypto_currency_categories),
-                        text = cryptoCurrencyDescription.value?.categories?.joinToString() ?: "",
-                        modifier = Modifier.padding(12.dp)
-                    )
+                        TextBlock(
+                            title = stringResource(id = R.string.crypto_currency_categories),
+                            text = cryptoCurrencyDescription.value?.categories?.joinToString()
+                                ?: "",
+                            modifier = Modifier.padding(6.dp)
+                        )
+                    }
                 }
 
             }
@@ -113,7 +126,10 @@ fun TextBlock(
             text = title,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(
+                    vertical = 4.dp,
+                    horizontal = 12.dp
+                ),
             textAlign = TextAlign.Start,
             fontWeight = FontWeight.Bold,
             style = TextStyle(
@@ -124,7 +140,10 @@ fun TextBlock(
             text = text,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(
+                    vertical = 4.dp,
+                    horizontal = 12.dp
+                ),
             textAlign = TextAlign.Start,
         )
     }
