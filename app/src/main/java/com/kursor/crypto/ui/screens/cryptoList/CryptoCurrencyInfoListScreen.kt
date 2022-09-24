@@ -1,28 +1,26 @@
 package com.kursor.crypto.ui.screens.cryptoList
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.kursor.crypto.ConnectionStatus
 import com.kursor.crypto.R
 import com.kursor.crypto.model.entities.CryptoCurrencyInfo
 import com.kursor.crypto.ui.screens.LoadingScreen
-import com.kursor.crypto.ui.screens.SomethingWentWrongSceeen
+import com.kursor.crypto.ui.screens.SomethingWentWrongScreen
 import com.kursor.crypto.ui.screens.cryptoList.CryptoCurrencyInfoListViewModel.Currency
 import com.kursor.crypto.ui.screens.elements.ChipGroup
 import org.koin.androidx.compose.getViewModel
@@ -39,26 +37,41 @@ fun CryptoCurrencyInfoListScreen(
     val connectionStatus =
         viewModel.connectionStatusLiveData.observeAsState(initial = ConnectionStatus.LOADING)
 
+    val selectedCurrency = viewModel.selectedCurrencyLiveData.observeAsState(initial = Currency.USD)
+
     viewModel.loadData(Currency.USD)
 
     Scaffold(
         topBar = {
-            TopAppBar() {
-                Column() {
+            Surface(
+                color = Color.White
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(
                         text = stringResource(id = R.string.crypto_currency_list),
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier.padding(
+                            vertical = 8.dp,
+                            horizontal = 16.dp
+                        ),
+                        style = TextStyle(
+                            fontSize = 22.sp
+                        ),
+                        fontWeight = FontWeight.Bold
                     )
                     ChipGroup(
                         elements = Currency.values().toList(),
                         onSelectedChanged = {
                             viewModel.loadData(it)
                         },
-                        selected = Currency.USD
+                        selected = selectedCurrency.value
                     )
+                    Divider(modifier = Modifier.height(2.dp))
                 }
-
             }
+
+
         }
     ) {
         when (connectionStatus.value) {
@@ -72,7 +85,7 @@ fun CryptoCurrencyInfoListScreen(
                     }
                 }
             }
-            ConnectionStatus.FAILURE -> SomethingWentWrongSceeen(
+            ConnectionStatus.FAILURE -> SomethingWentWrongScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 viewModel.loadData(Currency.USD)

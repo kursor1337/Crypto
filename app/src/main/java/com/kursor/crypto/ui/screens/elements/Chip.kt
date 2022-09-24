@@ -1,10 +1,12 @@
 package com.kursor.crypto.ui.screens.elements
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -17,16 +19,17 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun <T> Chip(
+    modifier: Modifier = Modifier,
     element: T,
     isSelected: Boolean = false,
     onSelectionChanged: (T) -> Unit = {},
     transformToString: (T) -> String
 ) {
     Surface(
-        modifier = Modifier.padding(4.dp),
+        modifier = modifier.padding(4.dp),
         elevation = 8.dp,
         shape = RoundedCornerShape(16.dp),
-        color = if (isSelected) MaterialTheme.colors.primary else Color.LightGray
+        color = if (isSelected) MaterialTheme.colors.primaryVariant else Color.LightGray
     ) {
         Row(modifier = Modifier
             .toggleable(
@@ -39,7 +42,7 @@ fun <T> Chip(
             Text(
                 text = transformToString(element),
                 style = MaterialTheme.typography.body2,
-                color = Color.DarkGray,
+                color = if (isSelected) MaterialTheme.colors.primary else Color.DarkGray,
                 modifier = Modifier.padding(
                     vertical = 4.dp,
                     horizontal = 20.dp

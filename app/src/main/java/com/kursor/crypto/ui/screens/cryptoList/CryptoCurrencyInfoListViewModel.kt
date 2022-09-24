@@ -20,8 +20,11 @@ class CryptoCurrencyInfoListViewModel(
     private val _connectionStatusLiveData = MutableLiveData(ConnectionStatus.LOADING)
     val connectionStatusLiveData: LiveData<ConnectionStatus> get() = _connectionStatusLiveData
 
+    private val _selectedCurrencyLiveData = MutableLiveData<Currency>()
+    val selectedCurrencyLiveData: LiveData<Currency> get() = _selectedCurrencyLiveData
 
     fun loadData(currency: Currency) {
+        _selectedCurrencyLiveData.value = currency
         _connectionStatusLiveData.value = ConnectionStatus.LOADING
         viewModelScope.launch {
             loadCryptoCurrencyInfoListUseCase(currency.id)

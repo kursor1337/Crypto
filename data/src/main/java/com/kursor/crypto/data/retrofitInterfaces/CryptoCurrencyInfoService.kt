@@ -11,7 +11,7 @@ interface CryptoCurrencyInfoService {
 
     @GET("/coins/markets")
     fun getCryptoCurrencyInfoList(
-        @Query("vs_currencies") vsCurrency: String
+        @Query("vs_currency") vsCurrency: String
     ): Call<List<CryptoCurrencyInfo>>
 
 }
