@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.kursor.crypto.data"
-    compileSdk = 32
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 26

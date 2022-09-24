@@ -8,8 +8,10 @@ class LoadCryptoCurrencyDescriptionUseCase(
     private val cryptoCurrencyDescriptionRepository: CryptoCurrencyDescriptionRepository
 ) {
 
-    suspend operator fun invoke(id: String): Result<CryptoCurrencyDescription> = tryRequest {
-        cryptoCurrencyDescriptionRepository.getCryptoCurrencyDescription(id)
+    suspend operator fun invoke(id: String): Result<CryptoCurrencyDescription> {
+        return tryRequest {
+            cryptoCurrencyDescriptionRepository.getCryptoCurrencyDescription(id)
+        }
     }
 
 }
