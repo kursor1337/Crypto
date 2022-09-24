@@ -23,6 +23,9 @@ class CryptoCurrencyInfoListViewModel(
     private val _selectedCurrencyLiveData = MutableLiveData<Currency>()
     val selectedCurrencyLiveData: LiveData<Currency> get() = _selectedCurrencyLiveData
 
+    private val _isRefreshingLiveData = MutableLiveData<Boolean>()
+    val isRefreshingLiveData: LiveData<Boolean> get() = _isRefreshingLiveData
+
     fun loadData(currency: Currency) {
         _selectedCurrencyLiveData.value = currency
         _connectionStatusLiveData.value = ConnectionStatus.LOADING
@@ -37,8 +40,21 @@ class CryptoCurrencyInfoListViewModel(
         }
     }
 
-    enum class Currency(val id: String) {
-        USD("usd"), EUR("eur")
+    fun refresh() {
+        _isRefreshingLiveData.value = true
+        viewModelScope.launch {
+            loadCryptoCurrencyInfoListUseCase(
+                _selectedCurrencyLiveData.value?.id ?: return@launch
+            ).onSuccess {
+                _isRefreshingLiveData.postValue(false)
+                _cryptoCurrencyInfoListLiveData.postValue(it)
+            }
+        }
+    }
+
+    enum class Currency(val id: String, val symbol: Char) {
+        USD(id = "usd", symbol = '$'),
+        EUR(id = "eur", symbol = '€')
     }
 
 }

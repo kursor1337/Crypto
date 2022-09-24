@@ -10,5 +10,5 @@ data class CryptoCurrencyInfo(
     val name: String,
     val image: String,
     @SerialName("current_price") val currentPrice: Double,
-    @SerialName("price_change_24h") val priceChange24h: Double
+    @SerialName("price_change_percentage_24h") val priceChange24h: Double
 )

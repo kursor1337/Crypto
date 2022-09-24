@@ -1,21 +1,31 @@
 package com.kursor.crypto.ui.screens.cryptoList
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.kursor.crypto.ConnectionStatus
 import com.kursor.crypto.R
 import com.kursor.crypto.model.entities.CryptoCurrencyInfo
@@ -24,6 +34,8 @@ import com.kursor.crypto.ui.screens.SomethingWentWrongScreen
 import com.kursor.crypto.ui.screens.cryptoList.CryptoCurrencyInfoListViewModel.Currency
 import com.kursor.crypto.ui.screens.elements.ChipGroup
 import org.koin.androidx.compose.getViewModel
+import java.text.DecimalFormat
+import kotlin.math.sign
 
 @Composable
 fun CryptoCurrencyInfoListScreen(
@@ -33,11 +45,10 @@ fun CryptoCurrencyInfoListScreen(
 
     val cryptoCurrencyInfoList =
         viewModel.cryptoCurrencyInfoListLiveData.observeAsState(initial = emptyList())
-
     val connectionStatus =
         viewModel.connectionStatusLiveData.observeAsState(initial = ConnectionStatus.LOADING)
-
     val selectedCurrency = viewModel.selectedCurrencyLiveData.observeAsState(initial = Currency.USD)
+    val isRefreshing = viewModel.isRefreshingLiveData.observeAsState(false)
 
     viewModel.loadData(Currency.USD)
 
@@ -52,7 +63,7 @@ fun CryptoCurrencyInfoListScreen(
                     Text(
                         text = stringResource(id = R.string.crypto_currency_list),
                         modifier = Modifier.padding(
-                            vertical = 8.dp,
+                            vertical = 16.dp,
                             horizontal = 16.dp
                         ),
                         style = TextStyle(
@@ -67,7 +78,7 @@ fun CryptoCurrencyInfoListScreen(
                         },
                         selected = selectedCurrency.value
                     )
-                    Divider(modifier = Modifier.height(2.dp))
+                    Divider(modifier = Modifier.height(3.dp))
                 }
             }
 
@@ -79,9 +90,18 @@ fun CryptoCurrencyInfoListScreen(
                 modifier = Modifier.fillMaxSize()
             )
             ConnectionStatus.SUCCESS -> {
-                LazyColumn {
-                    items(cryptoCurrencyInfoList.value) {
-                        CryptoCurrencyInfoListItem(cryptoCurrencyInfo = it)
+                SwipeRefresh(
+                    state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
+                    onRefresh = { viewModel.refresh() }) {
+                    LazyColumn {
+                        items(cryptoCurrencyInfoList.value) {
+                            CryptoCurrencyInfoListItem(
+                                cryptoCurrencyInfo = it,
+                                selectedCurrency = selectedCurrency.value,
+                                modifier = Modifier.padding(12.dp)
+                            )
+                            Divider(modifier = Modifier.height(2.dp))
+                        }
                     }
                 }
             }
@@ -98,24 +118,89 @@ fun CryptoCurrencyInfoListScreen(
 @Composable
 fun CryptoCurrencyInfoListItem(
     cryptoCurrencyInfo: CryptoCurrencyInfo,
+    selectedCurrency: Currency,
     modifier: Modifier = Modifier
 ) {
 
-    Row(modifier = modifier) {
+    val decimalFormat by remember { mutableStateOf(DecimalFormat("###,###.##")) }
+    val fontFamily by remember { mutableStateOf(FontFamily.SansSerif) }
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Image(
-            painter = rememberImagePainter(cryptoCurrencyInfo.image),
-            contentDescription = "crypto image"
+            painter = rememberAsyncImagePainter(cryptoCurrencyInfo.image),
+            contentDescription = "crypto image",
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .border(
+                    width = 1.5.dp,
+                    color = MaterialTheme.colors.primary,
+                    shape = CircleShape
+                )
         )
         Column {
-            Text(
-                text = cryptoCurrencyInfo.name,
-                modifier = Modifier.padding(4.dp)
-            )
-            Text(
-                text = cryptoCurrencyInfo.symbol.uppercase(),
-                modifier = Modifier.padding(4.dp)
-            )
+            Row {
+                Text(
+                    text = cryptoCurrencyInfo.name,
+                    modifier = Modifier.padding(
+                        horizontal = 12.dp
+                    ),
+                    style = TextStyle(
+                        fontSize = 20.sp
+                    ),
+                    fontFamily = fontFamily
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "${selectedCurrency.symbol}${
+                        decimalFormat.format(
+                            cryptoCurrencyInfo.currentPrice
+                        )
+                    }",
+                    modifier = Modifier.padding(
+                        horizontal = 12.dp
+                    ),
+                    style = TextStyle(
+                        fontSize = 20.sp
+                    ),
+                    fontFamily = fontFamily
+                )
+
+            }
+            Row {
+                Text(
+                    text = cryptoCurrencyInfo.symbol.uppercase(),
+                    modifier = Modifier.padding(
+                        horizontal = 12.dp
+                    ),
+                    color = Color.Gray,
+                    fontFamily = fontFamily
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                val sign = sign(cryptoCurrencyInfo.priceChange24h)
+                Text(
+                    text = "${
+                        when (sign) {
+                            1.0 -> "+"
+                            else -> ""
+                        }
+                    }${
+                        decimalFormat.format(
+                            cryptoCurrencyInfo.priceChange24h
+                        )
+                    }%",
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                    color = when (sign) {
+                        -1.0 -> Color.Red
+                        1.0 -> Color.Green
+                        else -> Color.Gray
+                    },
+                    fontFamily = fontFamily
+                )
+            }
         }
     }
-
 }

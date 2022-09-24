@@ -57,11 +57,13 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
 
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.25.1")
+
     implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
 
-    implementation("io.coil-kt:coil-compose:1.4.0")
+    implementation("io.coil-kt:coil-compose:2.0.0")
 
     //Koin di
     // Koin Core features
