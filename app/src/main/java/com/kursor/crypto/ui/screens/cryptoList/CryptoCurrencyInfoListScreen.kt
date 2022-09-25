@@ -105,13 +105,16 @@ fun CryptoCurrencyInfoListScreen(
                         isRefreshing = refreshingState.value == RefreshingState.REFRESHING
                     ),
                     onRefresh = { viewModel.refresh() }) {
-                    if (refreshingState.value == RefreshingState.FAILURE)
+                    if (refreshingState.value == RefreshingState.FAILURE) {
                         Toasty.error(
                             context,
                             R.string.error_while_loading,
                             Toast.LENGTH_LONG,
                             false
                         ).show()
+                        viewModel.setRefreshingState(RefreshingState.NOT_REFRESHING)
+                    }
+
                     LazyColumn {
                         items(cryptoCurrencyInfoList.value) {
                             CryptoCurrencyInfoListItem(

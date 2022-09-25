@@ -54,6 +54,10 @@ class CryptoCurrencyInfoListViewModel(
         }
     }
 
+    fun setRefreshingState(refreshingState: RefreshingState) {
+        _refreshingLiveData.value = refreshingState
+    }
+
     enum class Currency(val id: String, val symbol: Char) {
         USD(id = "usd", symbol = '$'),
         EUR(id = "eur", symbol = '€')
