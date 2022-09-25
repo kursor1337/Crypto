@@ -43,6 +43,7 @@ import org.koin.androidx.compose.getViewModel
 import java.text.DecimalFormat
 import kotlin.math.sign
 import es.dmoral.toasty.Toasty
+import java.math.RoundingMode
 
 @Composable
 fun CryptoCurrencyInfoListScreen(
@@ -108,8 +109,8 @@ fun CryptoCurrencyInfoListScreen(
                         Toasty.error(
                             context,
                             R.string.error_while_loading,
-                            Toast.LENGTH_SHORT,
-                            true
+                            Toast.LENGTH_LONG,
+                            false
                         ).show()
                     LazyColumn {
                         items(cryptoCurrencyInfoList.value) {
@@ -148,7 +149,7 @@ fun CryptoCurrencyInfoListItem(
     onClick: () -> Unit = { }
 ) {
 
-    val decimalFormat by remember { mutableStateOf(DecimalFormat("###,###.##")) }
+    val decimalFormat by remember { mutableStateOf(DecimalFormat("###,##0.00")) }
     val fontFamily by remember {
         mutableStateOf(
             FontFamily(
@@ -199,7 +200,8 @@ fun CryptoCurrencyInfoListItem(
                     Text(
                         text = "${selectedCurrency.symbol}${
                             decimalFormat.format(
-                                cryptoCurrencyInfo.currentPrice
+                                cryptoCurrencyInfo.currentPrice.toBigDecimal()
+                                    .setScale(2, RoundingMode.HALF_EVEN)
                             )
                         }",
                         modifier = Modifier.padding(
@@ -222,7 +224,10 @@ fun CryptoCurrencyInfoListItem(
                         fontFamily = fontFamily
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    val sign = sign(cryptoCurrencyInfo.priceChange24h)
+                    val sign = sign(
+                        cryptoCurrencyInfo.priceChange24h.toBigDecimal()
+                            .setScale(2, RoundingMode.HALF_EVEN).toDouble()
+                    )
                     Text(
                         text = "${
                             when (sign) {
@@ -231,7 +236,8 @@ fun CryptoCurrencyInfoListItem(
                             }
                         }${
                             decimalFormat.format(
-                                cryptoCurrencyInfo.priceChange24h
+                                cryptoCurrencyInfo.priceChange24h.toBigDecimal()
+                                    .setScale(2, RoundingMode.HALF_EVEN)
                             )
                         }%",
                         modifier = Modifier.padding(horizontal = 12.dp),
